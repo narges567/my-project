@@ -1,12 +1,22 @@
 #include <iostream>
-#include "File.h"
+#include "directory.h"
 
 int main() {
-    File f("a.txt");
-    f.overwrite("hello");
-    f.append("world");
-    for (const auto& line : f.getLines()) {
-        std::cout << line << std::endl;
+    Directory root("", nullptr);
+
+    Directory* docs = root.createSubdir("docs");
+    docs->createFile("a.txt")->overwrite("hello");
+    root.createFile("b.txt");
+
+    std::cout << "Path: " << docs->getPath() << std::endl;
+    for (const auto& name : root.list()) {
+        std::cout << name << std::endl;
+    }
+
+    try {
+        root.createSubdir("docs");
+    } catch (const std::exception& e) {
+        std::cout << "Error: " << e.what() << std::endl;
     }
     return 0;
 }
