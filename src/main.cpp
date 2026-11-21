@@ -1,24 +1,17 @@
 #include <iostream>
-#include "filesystem.h"
+#include "commit.h"
 
 int main() {
-    FileSystem fs;
-    try {
-        fs.mkdir("docs");
-        fs.cd("docs");
-        fs.echo("hello", "a.txt", false);
-        fs.echo("world", "a.txt", true);
-        std::cout << fs.pwd() << std::endl;
-        for (const auto& line : fs.cat("a.txt")) {
-            std::cout << line << std::endl;
-        }
-        fs.cd("..");
-        for (const auto& name : fs.ls()) {
-            std::cout << name << std::endl;
-        }
-        fs.cd("nothing");
-    } catch (const std::exception& e) {
-        std::cout << "Error: " << e.what() << std::endl;
-    }
+    Snapshot s;
+    s["a.txt"] = {"hello", "world"};
+
+    Commit c1(1, {}, "first commit", "ali", "ali@example.com", "2026-11-06 10:25:12", s);
+    Commit c2(2, {1}, "add file", "ali", "ali@example.com", "2026-11-06 10:30:00", s);
+
+    std::cout << "commit " << c2.getId() << std::endl;
+    std::cout << "Parent: " << c2.getParents()[0] << std::endl;
+    std::cout << "Author: " << c2.getAuthorName() << " <" << c2.getAuthorEmail() << ">" << std::endl;
+    std::cout << "Lines in a.txt: " << c2.getSnapshot().at("a.txt").size() << std::endl;
+    std::cout << "Root parents: " << c1.getParents().size() << std::endl;
     return 0;
 }
