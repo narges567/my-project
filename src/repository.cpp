@@ -1,5 +1,6 @@
 #include "repository.h"
 #include <stdexcept>
+#include <ctime>
 
 Repository::Repository(Directory* rootDir)
     : rootDir(rootDir), currentBranch("main"), headCommit(0) {
@@ -92,4 +93,46 @@ void Repository::reset(const std::string& fileName, Directory* currentDir) {
     } else {
         staging.erase(path);
     }
+
+    
+}
+
+std::string Repository::currentTime() const {
+    std::time_t t = std::time(nullptr);
+    char buf[32];
+    std::strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", std::localtime(&t));
+    return std::string(buf);
+}
+
+std::string Repository::commit(const std::string& message, const User& user) {
+    if (!user.isConfigured()) {
+        throw std::runtime_error("Please configure user.name and user.email first");
+    }
+    if (isDetached()) {
+        throw std::runtime_error("Cannot commit in detached HEAD state");
+    }
+
+    const Snapshot& last = lastCommitSnapshot();
+    if (staging == last) {
+        Snapshot working;
+        collectFiles(rootDir, working);
+        if (working == staging) {
+            return "nothing to commit, working tree clean";
+        }
+        return "no changes added to commit";
+    }
+
+    int newId = static_cast<int>(commits.size()) + 1;
+    std::vector<int> parents;
+    if (headCommit != 0) {
+        parents.push_back(headCommit);
+    }
+    commits.push_back(std::make_unique<Commit>(
+        newId, parents, message, user.getName(), user.getEmail(),
+        currentTime(), staging));
+
+    headCommit = newId;
+    branches[currentBranch] = newId;
+
+    return "[" + currentBranch + " " + std::to_string(newId) + "] " + message;
 }

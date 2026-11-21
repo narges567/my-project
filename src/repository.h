@@ -6,6 +6,8 @@
 #include "commit.h"
 #include "directory.h"
 #include <stdexcept>
+#include "user.h"
+#include <ctime>
 
 class Repository {
 private:
@@ -20,6 +22,8 @@ private:
     void collectFiles(Directory* dir, Snapshot& out) const;
     const Snapshot& lastCommitSnapshot() const;
 
+    std::string currentTime() const;
+
 public:
     explicit Repository(Directory* rootDir);
 
@@ -33,4 +37,6 @@ public:
     void addAll(Directory* currentDir);
     void reset(const std::string& fileName, Directory* currentDir);
     const Snapshot& getStaging() const;
+
+    std::string commit(const std::string& message, const User& user);
 };
