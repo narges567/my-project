@@ -1,20 +1,22 @@
 #include <iostream>
-#include "directory.h"
+#include "filesystem.h"
 
 int main() {
-    Directory root("", nullptr);
-
-    Directory* docs = root.createSubdir("docs");
-    docs->createFile("a.txt")->overwrite("hello");
-    root.createFile("b.txt");
-
-    std::cout << "Path: " << docs->getPath() << std::endl;
-    for (const auto& name : root.list()) {
-        std::cout << name << std::endl;
-    }
-
+    FileSystem fs;
     try {
-        root.createSubdir("docs");
+        fs.mkdir("docs");
+        fs.cd("docs");
+        fs.echo("hello", "a.txt", false);
+        fs.echo("world", "a.txt", true);
+        std::cout << fs.pwd() << std::endl;
+        for (const auto& line : fs.cat("a.txt")) {
+            std::cout << line << std::endl;
+        }
+        fs.cd("..");
+        for (const auto& name : fs.ls()) {
+            std::cout << name << std::endl;
+        }
+        fs.cd("nothing");
     } catch (const std::exception& e) {
         std::cout << "Error: " << e.what() << std::endl;
     }
