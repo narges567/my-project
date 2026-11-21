@@ -39,4 +39,7 @@ public:
     const Snapshot& getStaging() const;
 
     std::string commit(const std::string& message, const User& user);
+
+    std::string status() const;
+    std::string log() const;
 };
