@@ -1,17 +1,19 @@
 #include <iostream>
-#include "commit.h"
+#include "user.h"
+#include "repository.h"
+#include "filesystem.h"
 
 int main() {
-    Snapshot s;
-    s["a.txt"] = {"hello", "world"};
+    User u;
+    std::cout << "Configured: " << u.isConfigured() << std::endl;
+    u.setName("ali");
+    u.setEmail("ali@example.com");
+    std::cout << "Configured: " << u.isConfigured() << std::endl;
 
-    Commit c1(1, {}, "first commit", "ali", "ali@example.com", "2026-11-06 10:25:12", s);
-    Commit c2(2, {1}, "add file", "ali", "ali@example.com", "2026-11-06 10:30:00", s);
-
-    std::cout << "commit " << c2.getId() << std::endl;
-    std::cout << "Parent: " << c2.getParents()[0] << std::endl;
-    std::cout << "Author: " << c2.getAuthorName() << " <" << c2.getAuthorEmail() << ">" << std::endl;
-    std::cout << "Lines in a.txt: " << c2.getSnapshot().at("a.txt").size() << std::endl;
-    std::cout << "Root parents: " << c1.getParents().size() << std::endl;
+    FileSystem fs;
+    Repository repo(fs.getRoot());
+    std::cout << "Branch: " << repo.getCurrentBranch() << std::endl;
+    std::cout << "Detached: " << repo.isDetached() << std::endl;
+    std::cout << "Commits: " << repo.getCommitCount() << std::endl;
     return 0;
 }
