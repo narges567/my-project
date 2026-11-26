@@ -218,3 +218,16 @@ std::string Repository::log() const {
     }
     return out;
 }
+
+std::string Repository::branchList() const {
+    std::string out;
+    for (const auto& pair : branches) {
+        if (pair.first == currentBranch) {
+            out += "* ";
+        } else {
+            out += "  ";
+        }
+        out += pair.first + "\n";
+    }
+    return out;
+}

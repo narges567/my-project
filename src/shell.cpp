@@ -96,9 +96,16 @@ void Shell::executeGit(const std::vector<std::string>& a) {
         std::cout << repo->status();
     } else if (cmd == "log") {
         std::cout << repo->log();
-    } else {
-        throw std::runtime_error("Unknown git command: " + cmd);
+    } else if (cmd == "branch") {
+      if (a.size() != 2) {
+        throw std::runtime_error("Usage: git branch");
     }
+    std::cout << repo->branchList();
+
+    } else {
+        throw std::runtime_error("Unknown git command: "+ cmd);
+    }
+
 }
 
 void Shell::execute(const std::string& line) {

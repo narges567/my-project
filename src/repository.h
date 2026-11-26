@@ -32,6 +32,7 @@ public:
     bool isDetached() const;
     int getHeadCommit() const;
     int getCommitCount() const;
+    std::string branchList() const;
 
     void add(const std::string& fileName, Directory* currentDir);
     void addAll(Directory* currentDir);
